@@ -9,7 +9,15 @@ app = Flask(__name__)
 @app.before_first_request
 def organize_data():
     all_posts_response = requests.get('https://jsonplaceholder.typicode.com/posts')
+    all_posts_response = all_posts_response.json()
+    storage = {'1' : 'to be filled'}
+    print(all_posts_response[1])
     for post in all_posts_response:
+        base = BasePost(post)
+        withdate = ExtendedPost(base)
+        obj = JsonablePost(withdate)
+        storage[post] = obj
+
 
 
 

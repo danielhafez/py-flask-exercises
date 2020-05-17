@@ -4,6 +4,6 @@ class BasePost():
         self.id = post.get("id")
         self.title = post.get("title")
         self.body = post.get("body")
-        print(self)
+
 
 
