@@ -1,4 +1,4 @@
-import ExtendedPost
+from ExtendedPost import ExtendedPost
 import json
 
 class JsonablePost(ExtendedPost):
