@@ -9,13 +9,24 @@ def home_page():
 
 
 @app.route('/posts')
-def get_posts():
-    response = requests.get('https://jsonplaceholder.typicode.com/posts')
-    posts = response.json()
+def get_all_posts():
+    data_response = requests.get('https://jsonplaceholder.typicode.com/posts')
+    posts = data_response.json()
 
-    # return the data to the client using a response object
     response = app.response_class(
         response= json.dumps(posts),
+        status=200,
+        mimetype='application/json')
+    return response
+
+
+@app.route('/posts/<post_id>')
+def get_post(post_id):
+    data_response = requests.get('https://jsonplaceholder.typicode.com/posts/'+ post_id)
+    post =data_response.json()
+
+    response = app.response_class(
+        response=json.dumps(post),
         status=200,
         mimetype='application/json')
     return response
