@@ -31,3 +31,14 @@ def get_post(post_id):
         mimetype='application/json')
     return response
 
+
+@app.route('/posts-by-userId/<user_id>')
+def get_user_posta(user_id):
+    data_response = requests.get('https://jsonplaceholder.typicode.com/posts?userId=' + user_id)
+    posts =data_response.json()
+
+    response = app.response_class(
+        response=json.dumps(posts),
+        status=200,
+        mimetype='application/json')
+    return response
