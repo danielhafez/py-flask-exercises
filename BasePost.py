@@ -5,7 +5,3 @@ class BasePost():
         self.title = title
         self.body = body
 
-
-
-
-
