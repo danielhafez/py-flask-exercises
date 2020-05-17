@@ -33,7 +33,7 @@ def get_post(post_id):
 
 
 @app.route('/posts-by-userId/<user_id>')
-def get_user_posta(user_id):
+def get_user_posts(user_id):
     data_response = requests.get('https://jsonplaceholder.typicode.com/posts?userId=' + user_id)
     posts =data_response.json()
 
@@ -42,3 +42,17 @@ def get_user_posta(user_id):
         status=200,
         mimetype='application/json')
     return response
+
+
+
+@app.route('/posts/<post_id>/comments')
+def get_post_comments(post_id):
+    data_response = requests.get('https://jsonplaceholder.typicode.com/posts/' + post_id + '/comments')
+    comments =data_response.json()
+
+    response = app.response_class(
+        response=json.dumps(comments),
+        status=200,
+        mimetype='application/json')
+    return response
+
