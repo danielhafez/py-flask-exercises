@@ -1,4 +1,4 @@
-from flask import Flask, json
+from flask import Flask, json, abort
 import requests
 from JsonablePost import JsonablePost
 
@@ -10,8 +10,10 @@ posts_storage = {}
 def organize_data():
     global posts_storage
     response = requests.get('https://jsonplaceholder.typicode.com/posts')
-    data= response.json()
+    if response.status_code != 200:
+        abort(404)
 
+    data = response.json()
     for post in data:
         jsonable_post = JsonablePost(post)
         posts_storage[jsonable_post.id] = jsonable_post
@@ -35,12 +37,14 @@ def get_all_posts():
     return response
 
 
-@app.route('/posts/<post_id>')
+@app.route('/posts/<int:post_id>')
 def get_post(post_id):
-    data_response = requests.get('https://jsonplaceholder.typicode.com/posts/' + post_id)
-    json_response = data_response.json()
+    if post_id not in posts_storage:
+        abort(404)
+
+    post = posts_storage[post_id].format_to_json()
     response = app.response_class(
-        response=json.dumps(json_response),
+        response=json.dumps(post),
         status=200,
         mimetype='application/json')
     return response
@@ -48,8 +52,15 @@ def get_post(post_id):
 
 @app.route('/posts-by-userId/<user_id>')
 def get_user_posts(user_id):
-    data_response = requests.get('https://jsonplaceholder.typicode.com/posts?userId=' + user_id)
-    posts = data_response.json()
+    posts = []
+    count = 0
+    for item in posts_storage:
+        if int(posts_storage[item].userId) == int(user_id):
+            posts.append(posts_storage[item].format_to_json())
+            count = count + 1
+
+    if count == 0:
+        abort(404)
 
     response = app.response_class(
         response=json.dumps(posts),
