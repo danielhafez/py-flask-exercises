@@ -1,24 +1,20 @@
 from flask import Flask, json
 import requests
-from BasePost import BasePost
-from ExtendedPost import ExtendedPost
 from JsonablePost import JsonablePost
 
 app = Flask(__name__)
 
+posts_storage = {}
+
 @app.before_first_request
 def organize_data():
-    all_posts_response = requests.get('https://jsonplaceholder.typicode.com/posts')
-    all_posts_response = all_posts_response.json()
-    storage = {'1' : 'to be filled'}
-    print(all_posts_response[1])
-    for post in all_posts_response:
-        base = BasePost(post)
-        withdate = ExtendedPost(base)
-        obj = JsonablePost(withdate)
-        storage[post] = obj
+    global posts_storage
+    response = requests.get('https://jsonplaceholder.typicode.com/posts')
+    data= response.json()
 
-
+    for post in data:
+        jsonable_post = JsonablePost(post)
+        posts_storage[jsonable_post.id] = jsonable_post
 
 
 @app.route('/')
@@ -28,8 +24,9 @@ def home_page():
 
 @app.route('/posts')
 def get_all_posts():
-    data_response = requests.get('https://jsonplaceholder.typicode.com/posts')
-    posts = data_response.json()
+    posts = []
+    for item in posts_storage:
+        posts.append(posts_storage[item].format_to_json())
 
     response = app.response_class(
         response=json.dumps(posts),
